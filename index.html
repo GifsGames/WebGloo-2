@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Passeio no WebGloo</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #111; }
+    canvas { display: block; }
+    #hud {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-family: Arial, sans-serif;
+      white-space: pre-line;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body>
+  <div id="hud">🌍 WebGloo Passeio
+WASD controla o personagem vermelho.
+Setas controlam o personagem verde.</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 20, 60);
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Luz
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.position.set(10, 20, 10);
+    scene.add(dirLight);
+
+    // Chão
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(150, 150),
+      new THREE.MeshStandardMaterial({ color: 0x333333, side: THREE.DoubleSide })
+    );
+    floor.rotation.x = -Math.PI / 2;
+    scene.add(floor);
+
+    // Fachadas (locais lá atrás)
+    const fachadaVermelha = new THREE.Mesh(
+      new THREE.BoxGeometry(12, 12, 2),
+      new THREE.MeshStandardMaterial({ color: 0xff0000 })
+    );
+    fachadaVermelha.position.set(-20, 6, -60);
+    scene.add(fachadaVermelha);
+
+    const fachadaAzul = new THREE.Mesh(
+      new THREE.BoxGeometry(12, 12, 2),
+      new THREE.MeshStandardMaterial({ color: 0x0000ff })
+    );
+    fachadaAzul.position.set(0, 6, -60);
+    scene.add(fachadaAzul);
+
+    const fachadaVerde = new THREE.Mesh(
+      new THREE.BoxGeometry(12, 12, 2),
+      new THREE.MeshStandardMaterial({ color: 0x00ff00 })
+    );
+    fachadaVerde.position.set(20, 6, -60);
+    scene.add(fachadaVerde);
+
+    // Árvores na frente
+    function criarArvore(x, z) {
+      const tronco = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.5, 0.5, 4),
+        new THREE.MeshStandardMaterial({ color: 0x8B4513 })
+      );
+      tronco.position.set(x, 2, z);
+      scene.add(tronco);
+
+      const copa = new THREE.Mesh(
+        new THREE.SphereGeometry(2, 16, 16),
+        new THREE.MeshStandardMaterial({ color: 0x228B22 })
+      );
+      copa.position.set(x, 6, z);
+      scene.add(copa);
+    }
+    criarArvore(-10, -10);
+    criarArvore(10, -10);
+    criarArvore(-15, 0);
+    criarArvore(15, 0);
+
+    // Postes alinhados (rua)
+    function criarPoste(x, z) {
+      const poste = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.2, 0.2, 6),
+        new THREE.MeshStandardMaterial({ color: 0xaaaaaa })
+      );
+      poste.position.set(x, 3, z);
+      scene.add(poste);
+
+      const luz = new THREE.Mesh(
+        new THREE.SphereGeometry(0.5, 16, 16),
+        new THREE.MeshStandardMaterial({ color: 0xffffaa, emissive: 0xffffaa })
+      );
+      luz.position.set(x, 6, z);
+      scene.add(luz);
+    }
+    for (let i = -40; i <= 40; i += 10) {
+      criarPoste(-5, i);
+      criarPoste(5, i);
+    }
+
+    // Personagens
+    const guto = new THREE.Mesh(
+      new THREE.SphereGeometry(1.5, 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0xff4444 })
+    );
+    guto.position.set(-2, 1.5, 0);
+    scene.add(guto);
+
+    const amigo = new THREE.Mesh(
+      new THREE.SphereGeometry(1.5, 32, 32),
+      new THREE.MeshStandardMaterial({ color: 0x44ff44 })
+    );
+    amigo.position.set(2, 1.5, 0);
+    scene.add(amigo);
+
+    // Controles
+    const keys = {};
+    window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
+    window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Movimento do guto (WASD)
+      if (keys["w"]) guto.position.z -= 0.3;
+      if (keys["s"]) guto.position.z += 0.3;
+      if (keys["a"]) guto.position.x -= 0.3;
+      if (keys["d"]) guto.position.x += 0.3;
+
+      // Movimento do amigo (setas)
+      if (keys["arrowup"]) amigo.position.z -= 0.3;
+      if (keys["arrowdown"]) amigo.position.z += 0.3;
+      if (keys["arrowleft"]) amigo.position.x -= 0.3;
+      if (keys["arrowright"]) amigo.position.x += 0.3;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Ajuste ao redimensionar
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
