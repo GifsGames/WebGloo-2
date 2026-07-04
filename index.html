@@ -134,16 +134,16 @@ Setas controlam o personagem verde.</div>
       requestAnimationFrame(animate);
 
       // Movimento do guto (WASD)
-      if (keys["w"]) guto.position.z -= 0.3;
-      if (keys["s"]) guto.position.z += 0.3;
-      if (keys["a"]) guto.position.x -= 0.3;
-      if (keys["d"]) guto.position.x += 0.3;
+      if (keys["w"]) guto.position.z -= 1.0;
+      if (keys["s"]) guto.position.z += 1.0;
+      if (keys["a"]) guto.position.x -= 1.0;
+      if (keys["d"]) guto.position.x += 1.0;
 
       // Movimento do amigo (setas)
-      if (keys["arrowup"]) amigo.position.z -= 0.3;
-      if (keys["arrowdown"]) amigo.position.z += 0.3;
-      if (keys["arrowleft"]) amigo.position.x -= 0.3;
-      if (keys["arrowright"]) amigo.position.x += 0.3;
+      if (keys["arrowup"]) amigo.position.z -= 1.0;
+      if (keys["arrowdown"]) amigo.position.z += 1.0;
+      if (keys["arrowleft"]) amigo.position.x -= 1.0;
+      if (keys["arrowright"]) amigo.position.x += 1.0;
 
       renderer.render(scene, camera);
     }
